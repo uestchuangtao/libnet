@@ -1,5 +1,5 @@
-#ifndef MUTEX_H
-#define MUTEX_H 
+#ifndef LIBNET_MUTEX_H
+#define LIBNET_MUTEX_H
 
 #include <boost/noncopyable.hpp>
 
@@ -9,8 +9,7 @@
 
 
 
-class MutexLock:boost::noncopyable 
-{
+class MutexLock:boost::noncopyable {
 public:
     MutexLock(){
         assert(!pthread_mutex_init(&mutex_,NULL));

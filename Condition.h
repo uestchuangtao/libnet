@@ -1,5 +1,5 @@
-#ifndef CONDITION_H
-#define CONDITION_H
+#ifndef LIBNET_CONDITION_H
+#define LIBNET_CONDITION_H
 
 #include <assert.h>
 #include <pthread.h>
@@ -8,8 +8,7 @@
 
 #include "Mutex.h"
 
-class Condition:
-{
+class Condition: boost::noncopyable {
 public:
     Condition(MutexLock& mutex)
         :mutex_(mutex)
@@ -27,13 +26,15 @@ public:
     }
     void notify()
     {
-        pthread_cond_signal(&cond_,mutex_.getPthreadMutex());
+        pthread_cond_signal(&cond_);
     }
 
     void notifyAll()
     {
-        pthread_cond_broadcast(&cond_,mutex_.getPthreadMutex());
+        pthread_cond_broadcast(&cond_);
     }
+    
+    bool waitForSeconds(double seconds);
 
 
 private:

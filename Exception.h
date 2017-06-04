@@ -22,5 +22,7 @@ private:
     std::string message_;
 };
 
+//TODO add backstrace infomation
+
 
 #endif //LIBNET_EXCEPTION_H

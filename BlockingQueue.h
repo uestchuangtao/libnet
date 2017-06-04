@@ -46,9 +46,9 @@ public:
         return queue_.size();
     }
 private:
-    std::deque<T> queue_;
-    MutexLock mutex_;
+    mutable MutexLock mutex_;
     Condition notEmpty_;
+    std::deque<T> queue_;
 };
 
 #endif //LIBNET_BLOCKINGQUEUE_H

@@ -18,7 +18,7 @@ namespace sockets{
 
     void listenOrDie(int sockfd);
 
-    int accecpt(int sockfd,struct sockaddr* addr);
+    int accecpt(int sockfd,struct sockaddr_in* addr);
 
     void shutdownWrite(int sockfd);
 

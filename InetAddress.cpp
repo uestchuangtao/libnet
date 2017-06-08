@@ -43,6 +43,16 @@ std::string InetAddress::toIpPort() const
     return buf;
 }
 
+const struct sockaddr* InetAddress::getSockAddr() const
+{
+    return static_cast<const struct sockaddr*>(implicit_cast<void*>(addr_));
+}
+
+void InetAddress::setSockAddr(const struct sockaddr_in &addr)
+{
+    addr_ = addr;
+}
+
 static __thread char t_resolveBuffer[64 * 1024];
 
 bool InetAddress::resolve(const std::string &hostname, InetAddress *result)

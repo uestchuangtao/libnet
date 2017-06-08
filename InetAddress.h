@@ -28,6 +28,10 @@ public:
         return addr_.sin_family;
     }
 
+    const struct sockaddr* getSockAddr() const;
+
+    void setSockAddr(const struct sockaddr_in& addr);
+
     static bool resolve(const std::string& hostname, InetAddress *result);
 
 

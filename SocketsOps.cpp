@@ -82,10 +82,10 @@ void sockets::listenOrDie(int sockfd)
     }
 }
 
-int sockets::accecpt(int sockfd, struct sockaddr *addr)
+int sockets::accecpt(int sockfd, struct sockaddr_in *addr)
 {
     socklen_t addrlen = static_cast<socklen_t>(sizeof(*addr));
-    int connfd = accept(sockfd,addr,&addrlen);
+    int connfd = ::accept(sockfd,(SA*)addr,&addrlen);
     setNonBlockAndCloseOnExec(connfd);
     if(connfd < 0){
         //TODO: LOG_SYS<<"sockets::accept";
@@ -104,7 +104,7 @@ void sockets::shutdownWrite(int sockfd)
 void sockets::toIpPort(char *buf, size_t size, const struct sockaddr* addr)
 {
     toIp(buf,size,addr);
-    struct sockaddr_in addr4 = static_cast<struct sockaddr_in*>(implicit_cast<void*>(addr));
+    struct sockaddr_in addr4 = static_cast<struct sockaddr_in*>(implicit_cast<const void*>(addr));
     size_t  end = ::strlen(buf);
     uint16_t  port = ntohs(addr4.sin_port);
     assert(size > end);

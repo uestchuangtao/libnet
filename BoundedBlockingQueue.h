@@ -19,7 +19,7 @@ public:
         :mutex_(),
          notEmpty_(mutex_),
          notFull_(mutex_),
-         queue__(maxsize)
+         queue_(maxsize)
     {
 
     }

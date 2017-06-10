@@ -17,7 +17,7 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(reuseport);
     acceptSocket_.bindAddress(listenAddr);
-    acceptChannel_.setReadCallback(boost::bind(&Acceptor::handleReadead,this));
+    acceptChannel_.setReadCallback(boost::bind(&Acceptor::handleRead,this));
 }
 
 Acceptor::~Acceptor()

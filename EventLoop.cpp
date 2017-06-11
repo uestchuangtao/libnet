@@ -126,7 +126,7 @@ void EventLoop::queueInLoop(const Funtor &cb)
     MutexLockGuard lock(mutex_);
     pendingFunctors_.push_back(cb);
 
-    //TODO: what?  for wakeup loop poller->poll
+    //TODO: what?  for wakeup loop poller->poll  2017-6-11: why callingPendingFunctors_
     if(!isInLoopThread() || callingPendingFunctors_)
     {
         wakeup();

@@ -45,6 +45,15 @@ void Channel::update()
     loop_->updateChannel(this);
 }
 
+void Channel::reset()
+{
+    index_ = -1;
+    events_ = 0;
+    revents_ = 0;
+    addedToLoop_ = false;
+    eventHandling_ = false;
+}
+
 void Channel::handleEvent(TimeStamp receiveTime)
 {
     // TODO: tied?? guard??

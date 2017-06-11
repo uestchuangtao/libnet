@@ -107,7 +107,7 @@ public:
         return index_;
     }
 
-    void set_index(int idex)
+    void set_index(int index)
     {
         index_ = index;
     }
@@ -121,6 +121,8 @@ public:
     }
 
     void remove();
+
+    void reset();
 
     void handleEvent(TimeStamp receiveTime);
 private:

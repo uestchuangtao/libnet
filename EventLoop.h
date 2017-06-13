@@ -122,8 +122,8 @@ private:
     boost::scoped_ptr<Poller> poller_;
     boost::scoped_ptr<TimerQueue> timerQueue_;
 
-    int wakeupFd_; //TODO: ???
-    boost::scoped_ptr<Channel> wakeupChannel_;//TODO: ???
+    int wakeupFd_; //TODO: to wake up poll and then do pendingFunctor
+    boost::scoped_ptr<Channel> wakeupChannel_;
 
     boost::any context_;
 

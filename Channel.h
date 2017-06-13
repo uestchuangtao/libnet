@@ -122,8 +122,6 @@ public:
 
     void remove();
 
-    void reset();
-
     void handleEvent(TimeStamp receiveTime);
 private:
 

@@ -126,7 +126,7 @@ int Connector::removeAndResetChannel()
 
 void Connector::resetChannel()
 {
-    channel_->reset();
+    channel_.reset();
 }
 
 void Connector::handleWrite()

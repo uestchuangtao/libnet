@@ -7,10 +7,45 @@ set(SOURCE_FILES
         Condition.cpp
         Condition.h
         Mutex.h
-        BlockingQueue.h Exception.cpp Exception.h BoundedBlockingQueue.h Thread.cpp Thread.h ThreadPool.cpp ThreadPool.h InetAddress.cpp InetAddress.h SocketsOps.cpp SocketsOps.h Socket.cpp Socket.h Acceptor.cpp Acceptor.h Channel.cpp Channel.h EventLoop.cpp EventLoop.h Poller.cpp Poller.h PollPoller.cpp PollPoller.h EPollPoller.cpp EPollPoller.h Connector.cpp Connector.h)
+        BlockingQueue.h
+        Exception.cpp
+        Exception.h
+        BoundedBlockingQueue.h
+        Thread.cpp
+        Thread.h
+        ThreadPool.cpp
+        ThreadPool.h
+        InetAddress.cpp
+        InetAddress.h
+        SocketsOps.cpp
+        SocketsOps.h
+        Socket.cpp
+        Socket.h
+        Acceptor.cpp
+        Acceptor.h
+        Channel.cpp
+        Channel.h
+        EventLoop.cpp
+        EventLoop.h
+        Poller.cpp
+        Poller.h
+        PollPoller.cpp
+        PollPoller.h
+        EPollPoller.cpp
+        EPollPoller.h
+        Connector.cpp
+        Connector.h)
 
-set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.54.0 COMPONENTS log thread system regex REQUIRED)
+
+set (BOOST_ROOT "/usr/include/boost")
+
+#add include path
+include_directories(/usr/include)
+
+#add lib path
+include_directories(/usr/lib)
 
 add_executable(libnet ${SOURCE_FILES})
-target_link_libraries(libnet ${Boost_LIBRARIES})
+
+#lookup libboost_thread.a
+target_link_libraries(libnet boost_thread boost_system)

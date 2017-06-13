@@ -101,10 +101,10 @@ void EPollPoller::updateChannel(Channel *channel)
             assert(channels_.find(fd) != channels_.end());
             assert(channels_[fd] == channel);
         }
-        channel->set_index(kNew);
+        channel->set_index(kAdded);
         update(EPOLL_CTL_ADD,channel);
     }
-    else //index == kNew
+    else //index == kAdded
     {
         int fd = channel->fd();
         assert(channels_.find(fd) != channels_.end());
@@ -159,7 +159,7 @@ void EPollPoller::update(int operation, Channel *channel)
     //TODO: LOG_TRACE<< " epoll_ctl op = "<<operationToString(operation) << "fd = "<<fd<<" events = {" << channel->eventsToString() << "}";
     if(::epoll_ctl(epollfd_, operation, fd, &event) < 0)
     {
-        //LOG_SYS<<"EPollPoller::epoll_ctl";
+        //TODO: LOG_SYS<<"EPollPoller::epoll_ctl";
     }
 }
 

@@ -45,14 +45,14 @@ void Channel::update()
     loop_->updateChannel(this);
 }
 
-void Channel::handleEvent(TimeStamp receiveTime)
+void Channel::handleEvent(Timestamp receiveTime)
 {
     // TODO: tied?? guard??
     handleEventWithGuard(receiveTime);
 
 }
 
-void Channel::handleEventWithGuard(TimeStamp receiveTime)
+void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
     eventHandling_ = true;
     if((revents_ & POLLHUP) && !(revents_ & POLLIN))
@@ -92,7 +92,7 @@ std::string Channel::reventsToString() const
 std::string Channel::eventsToString(int fd, int ev)
 {
     std::ostringstream oss;
-    out<<fd<<": ";
+    oss<<fd<<": ";
     if(ev & POLLERR)
     {
         oss<<"ERR ";

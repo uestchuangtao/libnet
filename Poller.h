@@ -15,7 +15,7 @@
 #define USE_EPOLL
 
 class Channel;
-class TimeStamp;
+class Timestamp;
 
 class Poller : boost::noncopyable {
 public:

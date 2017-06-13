@@ -4,10 +4,16 @@
 
 #include "PollPoller.h"
 #include "Channel.h"
-#include "TimeStamp.h"
-
+#include "Timestamp.h"
 #include <poll.h>
 #include <assert.h>
+
+namespace {
+    template<typename To, typename From>
+    inline To implicit_cast(From const &f) {
+        return f;
+    }
+}
 
 PollPoller::PollPoller(EventLoop *loop)
     :Poller(loop)
@@ -20,9 +26,9 @@ PollPoller::~PollPoller()
 
 }
 
-TimeStamp PollPoller::poll(int timeoutMs, ChannelList *activeChannels)
+Timestamp PollPoller::poll(int timeoutMs, ChannelList *activeChannels)
 {
-    TimeStamp now(TimeStamp::now());
+    Timestamp now(Timestamp::now());
     int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
     if(numEvents > 0)
     {
@@ -36,7 +42,7 @@ TimeStamp PollPoller::poll(int timeoutMs, ChannelList *activeChannels)
     {
         //LOG_SYS << "PollPoller::poll()";
     }
-    retun now;
+    return now;
 }
 
 void PollPoller::updateChannel(Channel *channel)

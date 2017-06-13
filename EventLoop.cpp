@@ -4,6 +4,7 @@
 
 #include "EventLoop.h"
 #include "Channel.h"
+#include "Poller.h"
 #include "SocketsOps.h"
 
 #include <boost/bind.hpp>
@@ -121,7 +122,7 @@ void EventLoop::runInLoop(const Functor &cb)
     }
 }
 
-void EventLoop::queueInLoop(const Funtor &cb)
+void EventLoop::queueInLoop(const Functor &cb)
 {
     MutexLockGuard lock(mutex_);
     pendingFunctors_.push_back(cb);
@@ -218,7 +219,7 @@ void EventLoop::doPendingFunctors()
 
 void EventLoop::printActiveChannels() const
 {
-    for(auto ch:activeChannels_)
+    for(auto ch : activeChannels_)
     {
         //LOG_TRACE<<"{"<<ch->reventsToString()<<"}";
     }

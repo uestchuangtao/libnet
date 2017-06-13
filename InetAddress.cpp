@@ -5,16 +5,25 @@
 #include "InetAddress.h"
 #include "SocketsOps.h"
 
+#include <boost/implicit_cast.hpp>
+
 #include <strings.h> //bzero
 #include <assert.h>
 #include <netdb.h>  //gethostbyname_r
 
+namespace {
+    template<typename To, typename From>
+    inline To implicit_cast(From const &f) {
+        return f;
+    }
+}
+
 InetAddress::InetAddress(uint16_t port, bool loopbackOnly)
 {
-    bzero(addr_,sizeof(addr_));
+    bzero(&addr_,sizeof(addr_));
     addr_.sin_family = AF_INET;
     in_addr_t ip = loopbackOnly ? INADDR_LOOPBACK : INADDR_ANY;
-    addr_.sin_addr = ip;
+    addr_.sin_addr.s_addr = htonl(ip);
     addr_.sin_port = htons(port);
 }
 
@@ -27,7 +36,7 @@ InetAddress::InetAddress(const std::string &ip, uint16_t port)
 std::string InetAddress::toIp() const
 {
     char buf[64]="";
-    sockets::toIp(buf,sizeof(buf),&addr_);
+    sockets::toIp(buf,sizeof(buf),(struct sockaddr *)&addr_);
     return buf;
 }
 
@@ -39,7 +48,7 @@ uint16_t InetAddress::toPort() const
 std::string InetAddress::toIpPort() const
 {
     char buf[64]="";
-    sockets::toIpPort(buf,sizeof(buf),&addr_);
+    sockets::toIpPort(buf,sizeof(buf),(struct sockaddr *)&addr_);
     return buf;
 }
 

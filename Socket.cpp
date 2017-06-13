@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <strings.h>
+#include <netinet/tcp.h>  //for TCP_NODELAY
 
 void Socket::listen()
 {
@@ -52,7 +53,7 @@ void Socket::setReuseAddr(bool on)
 {
     int optval = on ? 1 : 0;
     socklen_t optlen = static_cast<socklen_t>(sizeof(optval));
-    if (setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, optval, optlen) != 0)
+    if (setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &optval, optlen) != 0)
     {
         //TODO: LOG_SYS<<"Socket::setReuseAddr";
     }

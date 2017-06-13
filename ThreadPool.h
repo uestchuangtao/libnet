@@ -19,7 +19,7 @@
 class ThreadPool : boost::noncopyable {
 public:
     typedef boost::function<void()> Task;
-    explicit ThreadPool(const std::string& str=string("ThreadPool"));
+    explicit ThreadPool(const std::string& str=std::string("ThreadPool"));
     ~ThreadPool();
 
     void setMaxQueueSize(int maxSize){

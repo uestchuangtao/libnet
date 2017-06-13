@@ -15,7 +15,7 @@ ThreadPool::ThreadPool(const std::string &str)
      notFull_(mutex_),
      name_(str),
      maxQueueSize_(0),
-     running(false)
+     running_(false)
 {
 
 }
@@ -44,7 +44,7 @@ void ThreadPool::start(int numThreads)
     for(int i=0; i < numThreads; ++i){
         char id[32];
         snprintf(id,sizeof(id),"%d",i+1);
-        threads_.push_back(new Thread(boost::bind(&runInThread,this),name + id));
+        threads_.push_back(new Thread(boost::bind(&runInThread,this),name_ + id));
         threads_[i].start();
     }
 

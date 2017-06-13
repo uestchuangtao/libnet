@@ -11,9 +11,17 @@
 #include <strings.h>
 #include <string.h>
 #include <stdio.h> //snprintf
+#include <unistd.h>
+#include <assert.h>
+
 
 namespace {
     typedef struct sockaddr SA;
+
+    template<typename To, typename From>
+    inline To implicit_cast(From const &f) {
+        return f;
+    }
 
     void setNonBlockAndCloseOnExec(int sockfd)
     {
@@ -68,7 +76,7 @@ int sockets::connect(int sockfd, const struct sockaddr *addr)
 
 void sockets::bindOrDie(int sockfd, const struct sockaddr *addr)
 {
-    if(::bind(sockfd,addr) < 0)
+    if(::bind(sockfd,addr,sizeof(*addr)) < 0)
     {
         //TODO: LOG_SYS<<"sockets::bind";
     }
@@ -104,27 +112,27 @@ void sockets::shutdownWrite(int sockfd)
 void sockets::toIpPort(char *buf, size_t size, const struct sockaddr* addr)
 {
     toIp(buf,size,addr);
-    struct sockaddr_in addr4 = static_cast<struct sockaddr_in*>(implicit_cast<const void*>(addr));
+    struct sockaddr_in* addr4 = static_cast<struct sockaddr_in*>(implicit_cast<const void*>(addr));
     size_t  end = ::strlen(buf);
-    uint16_t  port = ntohs(addr4.sin_port);
+    uint16_t  port = ntohs(addr4->sin_port);
     assert(size > end);
     snprintf(buf+end,size-end,":%u",port);
 }
 
 void sockets::toIp(char *buf, size_t size, const struct sockaddr* addr)
 {
-    struct sockaddr_in addr4 = static_cast<struct sockaddr_in*>(implicit_cast<void*>(addr));
-    if(::inet_ntop(AF_INET,&addr4.sin_addr,buf,static_cast<socklen_t>(size)) == NULL)
+    struct sockaddr_in* addr4 = static_cast<struct sockaddr_in*>(implicit_cast<void*>(addr));
+    if(::inet_ntop(AF_INET,&(addr4->sin_addr),buf,static_cast<socklen_t>(size)) == NULL)
     {
         //TODO: LOG_SYS<<"sockets::inet_ntop";
     }
 }
 
-void sockets::fromIpPort(const char *ip, uint16_t port, struct sockaddr_in addr)
+void sockets::fromIpPort(const char *ip, uint16_t port, struct sockaddr_in *addr)
 {
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    if(inet_pton(AF_IENT,&addr.sin_addr,ip) <= 0)
+    addr->sin_family = AF_INET;
+    addr->sin_port = htons(port);
+    if(inet_pton(AF_INET,ip,&(addr->sin_addr)) <= 0)
     {
         //TODO: LOG_SYS<<"sockets::inet_pton";
     }
@@ -157,7 +165,7 @@ struct sockaddr_in sockets::getLocalAddr(int sockfd)
 struct sockaddr_in sockets::getPeerAddr(int sockfd)
 {
     struct sockaddr_in peerAddr;
-    bzero(&peer,sizeof(peerAddr));
+    bzero(&peerAddr,sizeof(peerAddr));
     socklen_t addrlen = static_cast<socklen_t>(sizeof(peerAddr));
     if(::getpeername(sockfd,(SA*)&peerAddr,&addrlen) < 0)
     {

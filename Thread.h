@@ -12,6 +12,7 @@
 
 #include <pthread.h>
 #include <stdint.h>
+#include <atomic>
 
 class Thread : boost::noncopyable {
 public:

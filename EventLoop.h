@@ -7,7 +7,7 @@
 
 
 #include "TimerId.h"
-#include "TimeStamp.h"
+#include "Timestamp.h"
 #include "Mutex.h"
 
 #include <boost/noncopyable.hpp>
@@ -36,7 +36,7 @@ public:
 
     void quit();
 
-    TimeStamp pollReturnTime() const
+    Timestamp pollReturnTime() const
     {
         return pollReturnTime_;
     }
@@ -45,7 +45,7 @@ public:
     void runInLoop(const Functor& cb);
 
     //Queues callback int the loop thread
-    void queueInLoop(const Funtor& cb);
+    void queueInLoop(const Functor& cb);
 
     size_t queueSize() const;
 
@@ -54,7 +54,7 @@ public:
         return iteration_;
     }
 
-    TimerId runAt(const TimeStamp& time, const TimerCallback& cb);
+    TimerId runAt(const Timestamp& time, const TimerCallback& cb);
 
     TimerId runAfter(double iterval, const TimerCallback& cb);
 
@@ -68,7 +68,7 @@ public:
 
     void removeChannel(Channel* channel);
 
-    void hasChannel(Channel* channel);
+    bool hasChannel(Channel* channel);
 
     void assertInLoopThread()
     {
@@ -118,7 +118,7 @@ private:
     bool callingPendingFunctors_;
     int64_t iteration_;  // TODO: for what?
     const pid_t threadId_;
-    TimeStamp pollReturnTime_;
+    Timestamp pollReturnTime_;
     boost::scoped_ptr<Poller> poller_;
     boost::scoped_ptr<TimerQueue> timerQueue_;
 

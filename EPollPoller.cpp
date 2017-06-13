@@ -5,7 +5,6 @@
 #include "EPollPoller.h"
 #include "Channel.h"
 
-#include <sys/epoll.h>
 #include <assert.h>
 #include <errno.h>
 #include <strings.h>
@@ -15,14 +14,15 @@ namespace
     const int kNew = -1;
     const int kAdded = 0;
     const int kDeleted = 2;
+
+    template<typename To, typename From>
+    inline To implicit_cast(From const &f) {
+        return f;
+    }
 }
 
-const int EpollPoller::kInitEventListSize;
+const int EPollPoller::kInitEventListSize = 16;
 
-const char* EpollPoller::operationToString(int op)
-{
-
-}
 
 EPollPoller::EPollPoller(EventLoop *loop)
     :Poller(loop),
@@ -40,11 +40,11 @@ EPollPoller::~EPollPoller()
     ::close(epollfd_);
 }
 
-TimeStamp EPollPoller::poll(int timeoutMs, ChannelList *activeChannels)
+Timestamp EPollPoller::poll(int timeoutMs, ChannelList *activeChannels)
 {
     int numEvents = ::epoll_wait(epollfd_,&*events_.begin(), static_cast<int>(events_.size()),timeoutMs);
 
-    TimeStamp now(TimeStamp::now());
+    Timestamp now(Timestamp::now());
 
     if(numEvents > 0)
     {
@@ -113,7 +113,7 @@ void EPollPoller::updateChannel(Channel *channel)
 
         if(channel->isNoneEvent())
         {
-            updateChanel(EPOLL_CTL_DEL,channel);
+            update(EPOLL_CTL_DEL,channel);
             channel->set_index(kDeleted);
         }
         else

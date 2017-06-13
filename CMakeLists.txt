@@ -34,7 +34,10 @@ set(SOURCE_FILES
         EPollPoller.cpp
         EPollPoller.h
         Connector.cpp
-        Connector.h)
+        Connector.h
+        CurrentThread.h
+        Timestamp.h
+        Timestamp.cpp)
 
 
 set (BOOST_ROOT "/usr/include/boost")

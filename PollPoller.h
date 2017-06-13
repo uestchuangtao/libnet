@@ -8,14 +8,14 @@
 
 #include "Poller.h"
 
-struct pollfd;
+#include <poll.h>
 
 class PollPoller : public Poller {
 public:
     PollPoller(EventLoop* loop);
     virtual ~PollPoller();
 
-    virtual TimeStamp poll(int timeoutMs, ChannelList* activeChannels);
+    virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels);
     virtual void updateChannel(Channel* channel);
     virtual void removeChannel(Channel* channel);
 

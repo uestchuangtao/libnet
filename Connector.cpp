@@ -12,8 +12,8 @@
 #include <errno.h>
 #include <string.h>
 
-const int Connector::kMaxRetryDelayMs;
-const int Connector::kInitRetryDelayMs;
+const int Connector::kMaxRetryDelayMs = 30*1000;
+const int Connector::kInitRetryDelayMs = 500;
 
 Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
     :loop_(loop),

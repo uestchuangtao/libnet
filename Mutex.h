@@ -1,6 +1,8 @@
 #ifndef LIBNET_MUTEX_H
 #define LIBNET_MUTEX_H
 
+#include "CurrentThread.h"
+
 #include <boost/noncopyable.hpp>
 
 #include <assert.h>
@@ -31,7 +33,36 @@ public:
     }
 
 private:
+    friend class Condition;
+
+    class UnassignGuard : boost::noncopyable
+    {
+    public:
+        UnassignGuard(MutexLock &mutex)
+            :owner_(mutex)
+        {
+            owner_.unassignHolder();
+        }
+        ~UnassignGuard()
+        {
+            owner_.assignHolder();
+        }
+    private:
+        MutexLock &owner_;
+    };
+
+    void unassignHolder()
+    {
+        holder_ = 0;
+    }
+
+    void assignHolder()
+    {
+        holder_ = CurrentThread::tid();
+    }
+
     pthread_mutex_t mutex_;
+    pid_t holder_;
 };
 
 class MutexLockGuard:boost::noncopyable

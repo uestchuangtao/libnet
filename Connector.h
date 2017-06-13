@@ -11,12 +11,13 @@
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 class EventLoop;
 class Channel;
 
 
-class Connector : boost::noncopyable {
+class Connector : boost::noncopyable, public boost::enable_shared_from_this {
 public:
     typedef std::function<void(int sockfd)> NewConnectionCallback;
 
@@ -34,8 +35,8 @@ public:
 
 private:
     enum States {kDisconnected, kConnecting, kConnected};
-    static const int kMaxRetryDelayMs = 30*1000;
-    static const int kInitRetryDelayMs = 500;
+    static const int kMaxRetryDelayMs;
+    static const int kInitRetryDelayMs;
 
     void setState(States state)
     {

@@ -5,7 +5,7 @@
 #ifndef LIBNET_CHANNEL_H
 #define LIBNET_CHANNEL_H
 
-#include "TimeStamp.h"
+#include "Timestamp.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
@@ -16,7 +16,7 @@ class EventLoop;
 
 class Channel : boost::noncopyable {
 public:
-    typedef boost::function<void (TimeStamp)> ReadEventCallback;
+    typedef boost::function<void(Timestamp)> ReadEventCallback;
     typedef boost::function<void()> EventCallback;
 
     Channel(EventLoop* loop,int fd);
@@ -122,12 +122,12 @@ public:
 
     void remove();
 
-    void handleEvent(TimeStamp receiveTime);
+    void handleEvent(Timestamp receiveTime);
 private:
 
     void update();
 
-    void handleEventWithGuard(TimeStamp receiveTime);
+    void handleEventWithGuard(Timestamp receiveTime);
 
     static std::string eventsToString(int fd, int ev);
 

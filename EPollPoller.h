@@ -7,18 +7,20 @@
 
 #include "Poller.h"
 
-struct epoll_event;
+#include <sys/epoll.h>
+
 
 class EPollPoller : public Poller {
 public:
     EPollPoller(EventLoop* loop);
     virtual ~EPollPoller();
-    virtual TimeStamp poll(int timeoutMs, ChannelList* activeChannels);
-    virtual void updateChanel(Channel* channel);
-    virtual void removeChanel(Channel* channel);
+    virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels);
+
+    virtual void updateChannel(Channel* channel);
+    virtual void removeChannel(Channel* channel);
 
 private:
-    static const int kInitEventListSize = 16;
+    static const int kInitEventListSize;
 
     typedef std::vector<struct epoll_event> EventList;
 

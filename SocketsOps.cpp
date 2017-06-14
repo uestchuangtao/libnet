@@ -192,7 +192,7 @@ size_t sockets::readv(int sockfd,const struct iovec *iov, int iovcnt)
     return ::readv(sockfd,iov,iovcnt);
 }
 
-size_t sockets::write(int sockfd, void *buf, size_t len)
+size_t sockets::write(int sockfd,const void *buf, size_t len)
 {
     return ::write(sockfd,buf,len);
 }

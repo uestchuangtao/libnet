@@ -37,7 +37,7 @@ set(SOURCE_FILES
         Connector.h
         CurrentThread.h
         Timestamp.h
-        Timestamp.cpp)
+        Timestamp.cpp TcpConnection.cpp TcpConnection.h Buffer.cpp Buffer.h Callbacks.h)
 
 
 set (BOOST_ROOT "/usr/include/boost")

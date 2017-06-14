@@ -38,7 +38,7 @@ namespace sockets{
 
     size_t read(int sockfd,void *buf, size_t len);
     size_t readv(int sockfd,const struct iovec *iov, int iovcnt);
-    size_t write(int sockfd, void* buf, size_t len);
+    size_t write(int sockfd,const  void* buf, size_t len);
 
 }
 

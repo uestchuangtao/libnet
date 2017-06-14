@@ -5,8 +5,6 @@
 #include "InetAddress.h"
 #include "SocketsOps.h"
 
-#include <boost/implicit_cast.hpp>
-
 #include <strings.h> //bzero
 #include <assert.h>
 #include <netdb.h>  //gethostbyname_r

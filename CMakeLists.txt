@@ -37,7 +37,26 @@ set(SOURCE_FILES
         Connector.h
         CurrentThread.h
         Timestamp.h
-        Timestamp.cpp TcpConnection.cpp TcpConnection.h Buffer.cpp Buffer.h Callbacks.h TcpServer.cpp TcpServer.h Atomic.h TcpClient.cpp TcpClient.h)
+        Timestamp.cpp
+        TcpConnection.cpp
+        TcpConnection.h
+        Buffer.cpp
+        Buffer.h
+        Callbacks.h
+        TcpServer.cpp
+        TcpServer.h
+        Atomic.h
+        TcpClient.cpp
+        TcpClient.h
+        EventLoopThread.cpp
+        EventLoopThread.h
+        EventLoopThreadPool.cpp
+        EventLoopThreadPool.h
+        TimerQueue.cpp
+        TimerQueue.h
+        TimerId.h
+        Timer.cpp
+        Timer.h)
 
 
 set (BOOST_ROOT "/usr/include/boost")

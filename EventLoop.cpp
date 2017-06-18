@@ -6,6 +6,7 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "SocketsOps.h"
+#include "TimerQueue.h"
 
 #include <boost/bind.hpp>
 
@@ -166,15 +167,29 @@ bool EventLoop::hasChannel(Channel *channel)
 }
 
 //TODO:
-/*
-TimerId EventLoop::runAt(const TimeStamp& time, const TimerCallback& cb);
 
-TimerId EventLoop::runAfter(double iterval, const TimerCallback& cb);
+TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
+{
+    return timerQueue_->addTimer(cb,time,0.0);
+}
 
-TimerId EventLoop::runEvery(double iterval, const TimerCallback&cb);
+TimerId EventLoop::runAfter(double iterval, const TimerCallback& cb)
+{
+    Timestamp time(addTime(Timestamp::now(), iterval));
+    return runAt(time,cb);
+}
 
-void EventLoop::Cancel(TimerId timerId);
- */
+TimerId EventLoop::runEvery(double iterval, const TimerCallback&cb)
+{
+    Timestamp time(addTime(Timestamp::now(), iterval));
+    return timerQueue_->addTimer(cb,time,iterval);
+}
+
+void EventLoop::Cancel(TimerId timerId)
+{
+    return timerQueue_->cancel(timerId);
+}
+
 
 void EventLoop::abortNotInLoopThread()
 {

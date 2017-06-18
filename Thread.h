@@ -5,6 +5,7 @@
 #ifndef LIBNET_THREAD_H
 #define LIBNET_THREAD_H
 
+#include "Atomic.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
@@ -12,12 +13,10 @@
 
 #include <pthread.h>
 #include <stdint.h>
-#include <atomic>
 
 class Thread : boost::noncopyable {
 public:
     typedef boost::function<void()> ThreadFunc;
-    typedef std::atomic<uint32_t> AtomicInt32;
     explicit  Thread(const ThreadFunc& func,const std::string& name = std::string());
 
     ~Thread();
@@ -35,7 +34,7 @@ public:
 
     static int numCreated()
     {
-        return numCreated_.load();
+        return numCreated_.get();
     }
 
 private:

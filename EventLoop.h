@@ -19,7 +19,8 @@
 #include <stdint.h>
 
 class Poller;
-class TimeQueue;
+class TimerQueue;
+//class TimerId;
 class Channel;
 
 class EventLoop :boost::noncopyable {

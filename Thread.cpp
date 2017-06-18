@@ -119,7 +119,7 @@ Thread::Thread(const ThreadFunc &func, const std::string &str)
     setDefaultName();
 }
 
-Thread::AtomicInt32 Thread::numCreated_;
+AtomicInt32 Thread::numCreated_;
 
 Thread::~Thread()
 {
@@ -131,8 +131,8 @@ Thread::~Thread()
 
 void Thread::setDefaultName()
 {
-    numCreated_.store(numCreated() + 1);
-    int num = numCreated_.load();
+    numCreated_.increment();
+    int num = numCreated_.get();
     if (name_.empty())
     {
         char buf[32];

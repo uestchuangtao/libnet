@@ -74,7 +74,7 @@ void TcpConnection::send(Buffer *buf)
     {
         if (loop_->isInLoopThread())
         {
-            sendInLoop(buf->peek(), buf->readableByte());
+            sendInLoop(buf->peek(), buf->readableBytes());
             buf->retrieveAll();
         }
         else
@@ -254,7 +254,7 @@ void TcpConnection::handleRead(Timestamp receiveTime)
 {
     loop_->assertInLoopThread();
     int savedErrno = 0;
-    ssize_t n = inputBuffer_.readFd(channel_->fd,&savedErrno);
+    ssize_t n = inputBuffer_.readFd(channel_->fd(),&savedErrno);
     if(n > 0)
     {
         messageCallback_(shared_from_this(),&inputBuffer_,receiveTime);

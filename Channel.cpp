@@ -5,6 +5,8 @@
 #include "Channel.h"
 #include "EventLoop.h"
 
+#include <boost/shared_ptr.hpp>
+
 #include <poll.h>
 #include <assert.h>
 #include <sstream> //ostringstream
@@ -19,6 +21,7 @@ Channel::Channel(EventLoop *loop, int fd)
      events_(0),
      revents_(0),
      index_(-1),
+     tied_(false),
      eventHandling_(false),
      addedToLoop_(false)
 {
@@ -48,6 +51,16 @@ void Channel::update()
 void Channel::handleEvent(Timestamp receiveTime)
 {
     // TODO: tied?? guard??
+    boost::shared_ptr<void> guard;
+    if(tied_)
+    {
+        guard = tie_.lock();
+        if(guard)
+        {
+            handleEventWithGuard(receiveTime);
+        }
+    }
+
     handleEventWithGuard(receiveTime);
 
 }
@@ -77,6 +90,13 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
     }
     eventHandling_ = false;
 }
+
+void  Channel::tie(boost::shared_ptr<void>& obj)
+{
+    tie_ = obj;
+    tied_ = true;
+}
+
 
 
 std::string Channel::eventsToString() const

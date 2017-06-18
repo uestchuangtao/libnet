@@ -28,6 +28,14 @@ modify Mutex add UnassignGuard
 ### 2017-6-14
 TcpConnection
 Callbacks
-Buffer from muduo
+copy Buffer from muduo
+Channel add tie
+
+### 2017-6-16
+TcpServer  
+
+### 2017-6-18
+TcpClient
+
 
 

@@ -9,6 +9,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
+#include <boost/weak_ptr.hpp>
 
 #include <string>
 
@@ -112,6 +113,8 @@ public:
         index_ = index;
     }
 
+    void  tie(boost::shared_ptr<void>& obj);
+
     std::string eventsToString() const;
     std::string reventsToString() const;
 
@@ -143,6 +146,9 @@ private:
 
     bool eventHandling_;
     bool addedToLoop_;
+
+    boost::weak_ptr<void> tie_;
+    bool tied_;
 
     ReadEventCallback readCallback_;
     EventCallback writeCallback_;

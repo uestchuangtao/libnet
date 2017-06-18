@@ -33,6 +33,11 @@ public:
         return serverAddr_;
     }
 
+    void setNewConnectionCallback(const NewConnectionCallback& cb)
+    {
+        newConnectionCallback_ = cb;
+    }
+
 private:
     enum States {kDisconnected, kConnecting, kConnected};
     static const int kMaxRetryDelayMs;

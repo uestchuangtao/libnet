@@ -16,11 +16,11 @@ const int Connector::kMaxRetryDelayMs = 30*1000;
 const int Connector::kInitRetryDelayMs = 500;
 
 Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
-    :loop_(loop),
-     serverAddr_(serverAddr),
-     connect_(false),
-     States(kDisconnected),
-     retryDelayMs_(kInitRetryDelayMs)
+    : loop_(loop),
+      serverAddr_(serverAddr),
+      connect_(false),
+      state_(kDisconnected),
+      retryDelayMs_(kInitRetryDelayMs)
 {
 
 }

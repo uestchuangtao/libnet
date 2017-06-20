@@ -14,9 +14,8 @@
 class EventLoop;
 class InetAddress;
 
-class Acceptor :boost::noncopyable {
+class Acceptor : boost::noncopyable {
 public:
-
     typedef boost::function<void(int sockfd,
                                  const InetAddress&)> NewConnectionCallback;
 
@@ -43,7 +42,7 @@ private:
     EventLoop* loop_;
     Socket acceptSocket_;
     Channel acceptChannel_;
-    NewConnectionCallback newConnectioncallback_;
+    NewConnectionCallback newConnectionCallback_;
     bool listenning;
 
 };

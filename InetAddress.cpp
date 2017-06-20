@@ -52,7 +52,7 @@ std::string InetAddress::toIpPort() const
 
 const struct sockaddr* InetAddress::getSockAddr() const
 {
-    return static_cast<const struct sockaddr*>(implicit_cast<void*>(addr_));
+    return static_cast<const struct sockaddr *>(implicit_cast<const void *>(&addr_));
 }
 
 void InetAddress::setSockAddr(const struct sockaddr_in &addr)

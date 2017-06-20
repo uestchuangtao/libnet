@@ -84,7 +84,7 @@ private:
 
     void removeConnectionInLoop(const TcpConnectionPtr& conn);
 
-    typedef  std::map<std::string, TcpConnectionPtr> ConnectionMap;
+    typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
 
     EventLoop *loop_;
     const std::string ipPort_;

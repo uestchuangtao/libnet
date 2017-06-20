@@ -15,7 +15,8 @@ public:
     {
         assert(!pthread_cond_init(&cond_,NULL));
     }
-    ~Condtion()
+
+    ~Condition()
     {
         assert(!pthread_cond_destroy(&cond_));
     }

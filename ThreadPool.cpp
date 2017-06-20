@@ -8,6 +8,7 @@
 #include <boost/bind.hpp>
 
 #include <assert.h>
+#include <stdio.h> //snprintf
 
 ThreadPool::ThreadPool(const std::string &str)
     :mutex_(),
@@ -44,7 +45,7 @@ void ThreadPool::start(int numThreads)
     for(int i=0; i < numThreads; ++i){
         char id[32];
         snprintf(id,sizeof(id),"%d",i+1);
-        threads_.push_back(new Thread(boost::bind(&runInThread,this),name_ + id));
+        threads_.push_back(new Thread(boost::bind(&ThreadPool::runInThread, this), name_ + id));
         threads_[i].start();
     }
 

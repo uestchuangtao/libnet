@@ -16,7 +16,8 @@ public:
     explicit Exception(const char *str);
 
     virtual ~Exception() throw();
-    const char* what() const;
+
+    const char *what() const throw();
 
 private:
     std::string message_;

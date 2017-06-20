@@ -17,7 +17,7 @@
 namespace {
     __thread EventLoop* t_loopInThisThread = 0;
 
-    const kPollTimeMs = 10000;
+    const int kPollTimeMs = 10000;
 
     int createEventfd()
     {
@@ -128,7 +128,7 @@ void EventLoop::queueInLoop(const Functor &cb)
     MutexLockGuard lock(mutex_);
     pendingFunctors_.push_back(cb);
 
-    //TODO: what?  for wakeup loop poller->poll  2017-6-11: why callingPendingFunctors_
+    //TODO: what?  for wakeup loop poller->poll  2017-6-11: why callingPendingFunctors_  when CallingPendingFunctors,we need to run cb not wait poller timeout
     if(!isInLoopThread() || callingPendingFunctors_)
     {
         wakeup();

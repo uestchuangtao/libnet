@@ -56,7 +56,7 @@ set(SOURCE_FILES
         TimerQueue.h
         TimerId.h
         Timer.cpp
-        Timer.h)
+        Timer.h main.cpp daytime.cpp daytime.h)
 
 
 set (BOOST_ROOT "/usr/include/boost")
@@ -69,5 +69,8 @@ include_directories(/usr/lib)
 
 add_executable(libnet ${SOURCE_FILES})
 
+#support c++11
+#add_definitions(-std=c++11)
+
 #lookup libboost_thread.a
-target_link_libraries(libnet boost_thread boost_system)
+target_link_libraries(libnet pthread)

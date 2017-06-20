@@ -113,7 +113,7 @@ public:
         index_ = index;
     }
 
-    void  tie(boost::shared_ptr<void>& obj);
+    void tie(const boost::shared_ptr<void> &obj);
 
     std::string eventsToString() const;
     std::string reventsToString() const;

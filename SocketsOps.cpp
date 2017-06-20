@@ -112,7 +112,7 @@ void sockets::shutdownWrite(int sockfd)
 void sockets::toIpPort(char *buf, size_t size, const struct sockaddr* addr)
 {
     toIp(buf,size,addr);
-    struct sockaddr_in* addr4 = static_cast<struct sockaddr_in*>(implicit_cast<const void*>(addr));
+    const struct sockaddr_in *addr4 = static_cast<const struct sockaddr_in *>(implicit_cast<const void *>(addr));
     size_t  end = ::strlen(buf);
     uint16_t  port = ntohs(addr4->sin_port);
     assert(size > end);
@@ -121,7 +121,7 @@ void sockets::toIpPort(char *buf, size_t size, const struct sockaddr* addr)
 
 void sockets::toIp(char *buf, size_t size, const struct sockaddr* addr)
 {
-    struct sockaddr_in* addr4 = static_cast<struct sockaddr_in*>(implicit_cast<void*>(addr));
+    const struct sockaddr_in *addr4 = static_cast<const struct sockaddr_in *>(implicit_cast<const void *>(addr));
     if(::inet_ntop(AF_INET,&(addr4->sin_addr),buf,static_cast<socklen_t>(size)) == NULL)
     {
         //TODO: LOG_SYS<<"sockets::inet_ntop";

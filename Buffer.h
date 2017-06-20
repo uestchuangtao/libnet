@@ -411,7 +411,5 @@ class Buffer
   static const char kCRLF[];
 };
 
-}
-}
 
 #endif  // MUDUO_NET_BUFFER_H

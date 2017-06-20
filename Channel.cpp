@@ -91,7 +91,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
     eventHandling_ = false;
 }
 
-void  Channel::tie(boost::shared_ptr<void>& obj)
+void Channel::tie(const boost::shared_ptr<void> &obj)
 {
     tie_ = obj;
     tied_ = true;

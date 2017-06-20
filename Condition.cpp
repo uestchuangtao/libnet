@@ -13,5 +13,5 @@ bool Condition::waitForSeconds(double seconds)
     now.tv_sec =now.tv_sec+nseconds/kNSecondsPerSecond;
     now.tv_nsec= now.tv_nsec+nseconds%kNSecondsPerSecond;
     const timespec expired = now;
-    return ETIMEDOUT == pthread_cond_timedwait(&cond_,&mutex_,&now);
+    return ETIMEDOUT == pthread_cond_timedwait(&cond_, mutex_.getPthreadMutex(), &now);
 }

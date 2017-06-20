@@ -58,7 +58,7 @@ void EventLoopThread::threadFunc()
     }
     loop.loop();
 
-    loop = NULL;
+    loop_ = NULL;
 }
 
 

@@ -12,6 +12,9 @@
 #define MUDUO_NET_TIMERID_H
 
 
+#include <stdint.h>
+#include <stdlib.h>  // for NULL
+
 class Timer;
 
 ///

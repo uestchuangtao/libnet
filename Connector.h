@@ -17,9 +17,9 @@ class EventLoop;
 class Channel;
 
 
-class Connector : boost::noncopyable, public boost::enable_shared_from_this {
+class Connector : boost::noncopyable, public boost::enable_shared_from_this<Connector> {
 public:
-    typedef std::function<void(int sockfd)> NewConnectionCallback;
+    typedef boost::function<void(int sockfd)> NewConnectionCallback;
 
     Connector(EventLoop* loop,const InetAddress& serverAddr);
     ~Connector();

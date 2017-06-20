@@ -20,7 +20,7 @@ class EventLoop;
 class Socket;
 class Channel;
 
-class TcpConnection : boost::noncopyable, public boost::enable_shared_from_this {
+class TcpConnection : boost::noncopyable, public boost::enable_shared_from_this<TcpConnection> {
 public:
     TcpConnection(EventLoop* loop, const std::string &name, int sockfd, const InetAddress& localAddr, const InetAddress& peerAddr);
 

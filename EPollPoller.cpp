@@ -73,8 +73,8 @@ void EPollPoller::fillActiveChannels(int numEvents, ChannelList *activeChannels)
 
     for(int i = 0; i < numEvents; ++i)
     {
-       Channel* channel = static_cast<Channel*>(events_[i].data.ptr);
-       auto it = channels_.find(channel->fd());
+        Channel *channel = static_cast<Channel *>(events_[i].data.ptr);
+        ChannelMap::const_iterator it = channels_.find(channel->fd());
         assert(it != channels_.end());
         assert(it->second == channel);
         channel->set_revents(events_[i].events);

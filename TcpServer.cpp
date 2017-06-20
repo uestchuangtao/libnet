@@ -28,7 +28,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::
     acceptor_->setNewConnectionCallback(boost::bind(&TcpServer::newConnection, this, _1, _2));
 }
 
-void TcpServer::~TcpServer()
+TcpServer::~TcpServer()
 {
     loop_->assertInLoopThread();
 

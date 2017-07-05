@@ -77,6 +77,8 @@ public:
 
     void send(Buffer* buf);
 
+    void sendfile(int fd, off_t offset, size_t count);
+
     void shutdown();
 
     void forceClose();
@@ -98,6 +100,7 @@ public:
     {
         connectionCallback_ = cb;
     }
+
 
     void setMessageCallback(const MessageCallback& cb)
     {
@@ -145,6 +148,8 @@ private:
 
     void sendInLoop(const std::string& message);
     void sendInLoop(const void* data, size_t len);
+
+    void sendFileInLoop(int fd, off_t offset, size_t count);
     void shutdownInLoop();
 
     void forceCloseInLoop();

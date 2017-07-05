@@ -77,7 +77,8 @@ private:
         FILE *fpSend_;
         uint32_t process_;
         uint32_t length_;
-        TimerId *timerId_;
+        TimerId checkCFileTimerId_;
+        TimerId keepAliveTimerId_;
 
         ClientInfo()
                 : state_(kReceiveVerifyCode),
@@ -86,7 +87,8 @@ private:
                   fpSend_(NULL),
                   process_(0),
                   length_(0),
-                  timerId_(NULL)
+                  checkCFileTimerId_(),
+                  keepAliveTimerId_()
         {
             cout << "ClientInfo Construct" << endl;
         }
@@ -111,12 +113,15 @@ private:
         {
             ClientInfoPtr clientInfo(new ClientInfo);
             conn->setContext(clientInfo);
+            cout << "UsbServer::onConnection,clientInfo.use_count:" << clientInfo.use_count() << endl;
+            conn->setTcpNoDelay(true);
         }
     }
 
     void onMessage(const TcpConnectionPtr &conn, Buffer *buf, Timestamp time)
     {
-        ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*conn->getMutableConText());  //TODO???
+        ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*conn->getMutableConText());
+        cout << "UsbServer::onMessage,clientInfo.use_count:" << client_info.use_count() << endl;
         switch (client_info->state_)
         {
             case kReceiveVerifyCode:
@@ -129,7 +134,8 @@ private:
                     if (messageHeader.length_ > 0x7fffffff)
                     {
                         cout << "UsbServer::OnMessage,Invalid length " << messageHeader.length_ << endl;
-                        conn->shutdown(); //FIXME: disable reading
+                        conn->forceClose();
+                        return;
                     } else if (buf->readableBytes() >= messageHeader.length_ + kHeaderLen)
                     {
                         buf->retrieve(kHeaderLen);
@@ -149,11 +155,16 @@ private:
                         }
 
                         client_info->state_ = kWaiting;
+                        TcpConnectionWkPtr wkConn(conn);
+                        TimerId check_timerId = conn->getLoop()->runEvery(1.0,
+                                                                          boost::bind(&UsbServer::checkAndSendCFile,
+                                                                                      this, wkConn));
+                        client_info->checkCFileTimerId_ = check_timerId;
+                        TimerId keepAlive_timerId = conn->getLoop()->runEvery(60.0,
+                                                                              boost::bind(&UsbServer::checkKeepAlive,
+                                                                                          this, wkConn));
+                        client_info->keepAliveTimerId_ = keepAlive_timerId;
 
-                        TimerId timerId = conn->getLoop()->runEvery(1.0,
-                                                                    boost::bind(&UsbServer::checkAndSendCFile, this,
-                                                                                conn));
-                        client_info->timerId_ = &timerId;
 
                     }
                 }
@@ -185,7 +196,8 @@ private:
                     {
                         cout << "UsbServer::OnMessage,fopen ttemp failed!" << endl;
                         cout << "UsbServer::OnMessage " << errno << " " << strerror(errno) << endl;
-                        conn->shutdown();
+                        conn->forceClose();
+                        return;
                     }
                 }
                 break;
@@ -199,7 +211,8 @@ private:
                     if (nwrote < buf->readableBytes())
                     {
                         cout << "UsbServer::OnMessage,fwrite ttemp failed!" << endl;
-                        conn->shutdown();
+                        conn->forceClose();
+                        return;
                     } else
                     {
                         buf->retrieveAll();
@@ -238,12 +251,26 @@ private:
                                 cout << "UsbServer::OnMessage rename " << errno << " " << strerror(errno) << endl;
                             }
                             client_info->state_ = kWaiting;
-                            //TimerId timerId = conn->getLoop()->runEvery(1.0,boost::bind(&UsbServer::checkAndSendCFile,this,conn));
-                            //client_info->timerId_ = &timerId;
+                            TimerId timerId = conn->getLoop()->runEvery(1.0,
+                                                                        boost::bind(&UsbServer::checkAndSendCFile, this,
+                                                                                    conn));
+                            client_info->checkCFileTimerId_ = timerId;
 
                         }
                     }
 
+                }
+                break;
+            case kWaiting:
+                if (buf->readableBytes() >= kHeaderLen)
+                {
+                    const void *data = buf->peek();
+                    struct MessageHeader messageHeader;
+                    memcpy(&messageHeader, data, sizeof(struct MessageHeader));
+                    assert(messageHeader.type_ == kKeepalive);
+                    assert(messageHeader.length_ == 0);
+                    buf->retrieve(kHeaderLen);
+                    cout << "UsbServer::onMessage, receive keepalive ack" << endl;
                 }
                 break;
             default:
@@ -256,6 +283,38 @@ private:
     void onWriteComplete(const TcpConnectionPtr &conn)
     {
         ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*conn->getMutableConText());
+        /*sendfile version*/
+        if (client_info->state_ == kSendFile)
+        {
+            cout << "UsbServer::onWriteComplete " << "kSendFile:Send CFile->senfile version" << endl;
+
+            int fd = fileno(client_info->fpSend_);
+            if (fd == -1)
+            {
+                cout << "UsbServer::onWriteComplete,fileno failed" << endl;
+                cout << "UsbServer::onWriteComplete " << errno << " " << strerror(errno) << endl;
+                conn->forceClose();
+                return;
+            }
+            off_t offset = 0;
+            struct stat cfileState;
+            int ret = fstat(fd, &cfileState);
+            if (ret == -1)
+            {
+                cout << "UsbServer::onWriteComplete,fstat failed" << endl;
+                cout << "UsbServer::onWriteComplete " << errno << " " << strerror(errno) << endl;
+                conn->forceClose();
+                return;
+            }
+            size_t fileSize = static_cast<size_t>(cfileState.st_size);
+            conn->sendfile(fd, offset, fileSize);
+            cout << "UsbServer::onWriteComplete " << "Send Cfile finish" << endl;
+            //removeCFile(client_info->verifyCode_.c_str());
+            client_info->state_ = kReceiveHeader;
+        }
+
+        /*send version*/
+        /*
         if (client_info->state_ == kSendFile)
         {
             cout << "UsbServer::onWriteComplete " << "kSendFile:Send CFile" << endl;
@@ -264,11 +323,16 @@ private:
             //long npos = ftell(client_info->fpSend_);
             cout << "UsbServer::onWriteComplete " << " read CFile:" << nread << " fpSend_:" << client_info->fpSend_
                  << endl;
-            cout << "UsbServer::onWriteComplete " << errno << " " << strerror(errno) << endl;
+            if(nread < 0)
+            {
+                cout << "UsbServer::onWriteComplete " << errno << " " << strerror(errno) << endl;
+            }
+
             if (nread > 0)
             {
                 conn->send(buf, nread);
-            } else
+            }
+            else
             {
                 //send cfile finish
                 ::fclose(client_info->fpSend_);
@@ -277,36 +341,59 @@ private:
                 //removeCFile(client_info->verifyCode_.c_str());
                 client_info->state_ = kReceiveHeader;
             }
+        }*/
+
+
+    }
+
+    void checkAndSendCFile(TcpConnectionWkPtr conn)
+    {
+        TcpConnectionPtr guardConn = conn.lock();
+        if (guardConn)
+        {
+            ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*guardConn->getMutableConText());
+            if (client_info->state_ == kWaiting)
+            {
+                cout << "UsbServer::checkAndSendCFile " << "waiting for CFile down" << endl;
+                //set cfile
+                char CFilePath[50];
+                strcpy(CFilePath, WorkSpace);
+                strcat(CFilePath, client_info->verifyCode_.c_str());
+                strcat(CFilePath, ".c");
+                //waiting for .c file
+                FILE *fpSend = ::fopen(CFilePath, "rb");
+                //cout<<CFilePath<<endl;
+                if (fpSend)
+                {
+                    cout << "UsbServer::checkAndSendCFile " << "CFile down" << endl;
+                    client_info->state_ = kSendFile;
+                    client_info->fpSend_ = fpSend;
+                    struct stat cfileInfo;
+                    stat(CFilePath, &cfileInfo);
+                    struct MessageHeader sendHeader;
+                    sendHeader.type_ = kCommand;
+                    sendHeader.length_ = static_cast<uint32_t>(cfileInfo.st_size);
+                    cout << "UsbServer::checkAndSendCFile  CFile size:" << cfileInfo.st_size << endl;
+                    guardConn->send((const char *) &sendHeader, sizeof(sendHeader));
+                    guardConn->getLoop()->Cancel(client_info->checkCFileTimerId_);
+                }
+            }
         }
     }
 
-    void checkAndSendCFile(const TcpConnectionPtr &conn)
+    void checkKeepAlive(TcpConnectionWkPtr conn)
     {
-        ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*conn->getMutableConText());
-        if (client_info->state_ == kWaiting)
+        TcpConnectionPtr guardConn = conn.lock();
+        if (guardConn)
         {
-            cout << "UsbServer::checkAndSendCFile " << "waiting for CFile down" << endl;
-            //set cfile
-            char CFilePath[50];
-            strcpy(CFilePath, WorkSpace);
-            strcat(CFilePath, client_info->verifyCode_.c_str());
-            strcat(CFilePath, ".c");
-            //waiting for .c file
-            FILE *fpSend = ::fopen(CFilePath, "rb");
-            //cout<<CFilePath<<endl;
-            if (fpSend)
+            ClientInfoPtr &client_info = boost::any_cast<ClientInfoPtr &>(*guardConn->getMutableConText());
+            if (client_info->state_ == kWaiting)
             {
-                cout << "UsbServer::checkAndSendCFile " << "CFile down" << endl;
-                client_info->state_ = kSendFile;
-                client_info->fpSend_ = fpSend;
-                struct stat cfileInfo;
-                stat(CFilePath, &cfileInfo);
+                cout << "UsbServer::checkKeepAlive " << endl;
                 struct MessageHeader sendHeader;
-                sendHeader.type_ = kCommand;
-                sendHeader.length_ = static_cast<uint32_t>(cfileInfo.st_size);
-                cout << "UsbServer::checkAndSendCFile  CFile size:" << cfileInfo.st_size << endl;
-                conn->send((const char *) &sendHeader, sizeof(sendHeader));
-                conn->getLoop()->Cancel(*client_info->timerId_);
+                sendHeader.type_ = kKeepalive;
+                sendHeader.length_ = 0;
+                guardConn->send((const char *) &sendHeader, sizeof(sendHeader));
             }
         }
     }

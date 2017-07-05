@@ -170,7 +170,6 @@ bool EventLoop::hasChannel(Channel *channel)
     poller_->hasChannel(channel);
 }
 
-//TODO:
 
 TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb)
 {

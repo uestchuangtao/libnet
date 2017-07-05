@@ -82,7 +82,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn)
 {
-    loop_->runInLoop(boost::bind(&TcpServer::removeConnectionInLoop,this ,conn));
+    loop_->runInLoop(boost::bind(&TcpServer::removeConnectionInLoop, this, conn));
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
@@ -90,6 +90,6 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
     loop_->assertInLoopThread();
     size_t n = connections_.erase(conn->name());
     assert(n == 1);
-    EventLoop * ioLoop = conn->getLoop();
-    ioLoop->queueInLoop(boost::bind(&TcpConnection::connectDestroyed,conn));
+    EventLoop *ioLoop = conn->getLoop();
+    ioLoop->queueInLoop(boost::bind(&TcpConnection::connectDestroyed, conn));
 }

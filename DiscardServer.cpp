@@ -33,7 +33,7 @@ public:
 
         server_.setThreadNum(numThreads);
 
-        /*timerId_ = */loop_->runEvery(10.0, boost::bind(&DiscardServer::printThroughput, this));
+        loop_->runEvery(10.0, boost::bind(&DiscardServer::printThroughput, this));
     }
 
     void start()
@@ -71,18 +71,15 @@ private:
 
         startTime_ = endTime;
         oldCounter_ = newCounter;
-
-        //loop_->Cancel(timerId_);
-
     }
 
-    TcpServer server_;
+
     EventLoop *loop_;
+    TcpServer server_;
     AtomicInt64 transferred_;
     AtomicInt64 receivedMessages_;
     int64_t oldCounter_;
     Timestamp startTime_;
-    //TimerId timerId_;
 };
 
 int main(int argc, char **argv)

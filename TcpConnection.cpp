@@ -13,6 +13,7 @@
 
 #include <errno.h>
 #include <assert.h>
+#include <sys/sendfile.h>
 
 //#include <iostream>  // for test
 
@@ -52,6 +53,8 @@ TcpConnection::TcpConnection(EventLoop *loop, const std::string &name, int sockf
 TcpConnection::~TcpConnection()
 {
     assert(state_ == kDisconnected);
+    //std::cout<<"TcpConnection destroy"<<std::endl;
+
 }
 
 void TcpConnection::send(const char *buf, int len)
@@ -85,6 +88,21 @@ void TcpConnection::send(Buffer *buf)
         }
     }
 }
+
+void TcpConnection::sendfile(int fd, off_t offset, size_t count)
+{
+    if (state_ == kConnected)
+    {
+        if (loop_->isInLoopThread())
+        {
+            sendFileInLoop(fd, offset, count);
+        } else
+        {
+            loop_->runInLoop(boost::bind(&TcpConnection::sendFileInLoop, this, fd, offset, count));
+        }
+    }
+}
+
 
 void TcpConnection::sendInLoop(const std::string &message)
 {
@@ -141,6 +159,12 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
     }
 }
 
+void TcpConnection::sendFileInLoop(int fd, off_t offset, size_t count)
+{
+    size_t nwrote = ::sendfile(socket_->fd(), fd, &offset, count);
+    assert(nwrote == count);
+}
+
 void TcpConnection::shutdown()
 {
     if(state_ == kConnected)
@@ -164,6 +188,7 @@ void TcpConnection::forceClose()
     if(state_ == kDisconnecting || state_ == kConnected)
     {
         setState(kDisconnecting);
+        //TODO: while queueInLoop use shared_from_this
         loop_->queueInLoop(boost::bind(&TcpConnection::forceCloseInLoop, shared_from_this()));
     }
 }
@@ -235,7 +260,7 @@ void TcpConnection::connectEstablished()
     assert(state_ == kConnecting);
     setState(kConnected);
 
-    //TODO:  why???
+    //TODO:  why???  answer:to solve cycle-occupied
     channel_->tie(shared_from_this());
     channel_->enableReading();
     //std::cout << "In connectEstablished::connectionCallback" << std::endl;
@@ -245,6 +270,7 @@ void TcpConnection::connectEstablished()
 void TcpConnection::connectDestroyed()
 {
     loop_->assertInLoopThread();
+    //std::cout << "In connectDestroyed" << std::endl;
     if(state_ == kConnected)
     {
         setState(kDisconnected);
@@ -254,6 +280,7 @@ void TcpConnection::connectDestroyed()
         //std::cout << "In connectDestroyed::connectionCallback" << std::endl;
         connectionCallback_(shared_from_this());
     }
+
     channel_->remove();
 }
 
@@ -319,13 +346,18 @@ void TcpConnection::handleClose()
     setState(kDisconnected);
     channel_->disableAll();
 
+
+    //closeCallback will erase conn, use_count--,to protect conn to finish conndestroy
     TcpConnectionPtr guardThis(shared_from_this());
 
     //TODO: connectionCallback for what,answer: print connection_info when conn->isconnected
     //std::cout << "In handleClose::connectionCallback" << std::endl;
+    //std::cout<<"conn.use_count:"<<guardThis.use_count()<<std::endl;
     connectionCallback_(guardThis);
 
     closeCallback_(guardThis);
+
+    std::cout << "conn.use_count:" << guardThis.use_count() << std::endl;
 }
 
 void TcpConnection::handleError()

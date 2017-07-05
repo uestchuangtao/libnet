@@ -19,6 +19,8 @@
 
 #include <sys/timerfd.h>
 
+#include <iostream>
+
 namespace detail {
 
     int createTimerfd()
@@ -133,6 +135,8 @@ void TimerQueue::addTimerInLoop(Timer *timer)
 
 void TimerQueue::cancelInLoop(TimerId timerId)
 {
+    //std::cout<<"TimerQueue::cancelInLoop"<<std::endl;
+
     loop_->assertInLoopThread();
     assert(timers_.size() == activeTimers_.size());
     ActiveTimer timer(timerId.timer_, timerId.sequence_);
@@ -149,6 +153,8 @@ void TimerQueue::cancelInLoop(TimerId timerId)
         cancelingTimers_.insert(timer);
     }
     assert(timers_.size() == activeTimers_.size());
+
+    //std::cout<<"TimerQueue::cancelInLoop exit"<<std::endl;
 }
 
 void TimerQueue::handleRead()

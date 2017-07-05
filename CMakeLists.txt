@@ -56,7 +56,19 @@ set(SOURCE_FILES
         TimerQueue.h
         TimerId.h
         Timer.cpp
-        Timer.h main.cpp daytime.cpp daytime.h)
+        Timer.h)
+
+set(DAYTIME_SOURCE_FILES
+        DaytimeServer.cpp daytime.cpp daytime.h)
+
+set(DISCARD_SERVER_SOURCE_FILES
+        DiscardServer.cpp)
+
+set(DISCARD_CLIENT_SOURCE_FILES
+        DiscardClient.cpp)
+
+set(USB_SERVER_SOURCE_FILES
+        UsbServer.cpp)
 
 
 set (BOOST_ROOT "/usr/include/boost")
@@ -68,9 +80,17 @@ include_directories(/usr/include)
 include_directories(/usr/lib)
 
 add_executable(libnet ${SOURCE_FILES})
-
-#support c++11
-#add_definitions(-std=c++11)
-
 #lookup libboost_thread.a
 target_link_libraries(libnet pthread)
+
+add_executable(daytime_server ${SOURCE_FILES} ${DAYTIME_SOURCE_FILES})
+target_link_libraries(daytime_server pthread)
+
+add_executable(discard_server ${SOURCE_FILES} ${DISCARD_SERVER_SOURCE_FILES})
+target_link_libraries(discard_server pthread)
+
+add_executable(discard_client ${SOURCE_FILES} ${DISCARD_CLIENT_SOURCE_FILES})
+target_link_libraries(discard_client pthread)
+
+add_executable(usb_server ${SOURCE_FILES} ${USB_SERVER_SOURCE_FILES})
+target_link_libraries(usb_server pthread)

@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <assert.h>
 
-#include <iostream>  // for test
+//#include <iostream>  // for test
 
 void defaultConnectionCallback(const TcpConnectionPtr& conn)
 {
@@ -238,8 +238,7 @@ void TcpConnection::connectEstablished()
     //TODO:  why???
     channel_->tie(shared_from_this());
     channel_->enableReading();
-    //TODO:
-    std::cout << "In connectEstablished::connectionCallback" << std::endl;
+    //std::cout << "In connectEstablished::connectionCallback" << std::endl;
     connectionCallback_(shared_from_this());
 }
 
@@ -251,8 +250,8 @@ void TcpConnection::connectDestroyed()
         setState(kDisconnected);
         channel_->disableAll();
 
-        //TODO: why???
-        std::cout << "In connectDestroyed::connectionCallback" << std::endl;
+        //TODO: why??? answer: print connection_info when conn->isconnected
+        //std::cout << "In connectDestroyed::connectionCallback" << std::endl;
         connectionCallback_(shared_from_this());
     }
     channel_->remove();
@@ -316,14 +315,14 @@ void TcpConnection::handleWrite()
 void TcpConnection::handleClose()
 {
     loop_->assertInLoopThread();
-    assert(state_ == kDisconnecting || state_ == kDisconnected);
+    assert(state_ == kDisconnecting || state_ == kConnected);
     setState(kDisconnected);
     channel_->disableAll();
 
     TcpConnectionPtr guardThis(shared_from_this());
 
-    //TODO: connectionCallback for what
-    std::cout << "In handleClose::connectionCallback" << std::endl;
+    //TODO: connectionCallback for what,answer: print connection_info when conn->isconnected
+    //std::cout << "In handleClose::connectionCallback" << std::endl;
     connectionCallback_(guardThis);
 
     closeCallback_(guardThis);

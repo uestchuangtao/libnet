@@ -91,6 +91,7 @@ void EventLoop::loop()
         while(it!=activeChannels_.end()){
             currentActiveChannel_ = *it;
             currentActiveChannel_->handleEvent(pollReturnTime_);
+            ++it;
         }
         currentActiveChannel_ = NULL; //allthing done this cicyle
         eventHanding_ = false;
@@ -152,8 +153,11 @@ void EventLoop::removeChannel(Channel *channel)
 {
     assert(channel->ownerLoop() == this);
     assertInLoopThread();
-
-    assert(channel == currentActiveChannel_ || std::find(activeChannels_.begin(),activeChannels_.end(),channel) == activeChannels_.end());
+    if (eventHanding_)
+    {
+        assert(channel == currentActiveChannel_ ||
+               std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end());
+    }
 
     poller_->removeChannel(channel);
 }

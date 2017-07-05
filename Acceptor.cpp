@@ -8,6 +8,9 @@
 
 #include <boost/bind.hpp>
 
+using std::cout;
+using std::endl;
+
 Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reuseport)
     :loop_(loop),
      acceptSocket_(sockets::createNonBlockingOrDie()),

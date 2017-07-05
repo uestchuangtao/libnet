@@ -33,6 +33,10 @@ Channel::~Channel()
     assert(!eventHandling_);
     assert(!addedToLoop_);
     //TODO : check  isInLoopThread()
+    if (loop_->isInLoopThread())
+    {
+        assert(!loop_->hasChannel(this));
+    }
 }
 
 void Channel::remove()
@@ -59,9 +63,11 @@ void Channel::handleEvent(Timestamp receiveTime)
         {
             handleEventWithGuard(receiveTime);
         }
+    } else
+    {
+        handleEventWithGuard(receiveTime);
     }
 
-    handleEventWithGuard(receiveTime);
 
 }
 
@@ -78,7 +84,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         if(errorCallback_)
             errorCallback_();
     }
-    if(revents_ & (POLLIN | POLLRDHUP || POLLPRI))
+    if (revents_ & (POLLIN | POLLRDHUP | POLLPRI))
     {
         if(readCallback_)
             readCallback_(receiveTime);

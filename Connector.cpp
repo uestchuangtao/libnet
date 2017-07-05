@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <string.h>
 
+
 const int Connector::kMaxRetryDelayMs = 30*1000;
 const int Connector::kInitRetryDelayMs = 500;
 
@@ -61,7 +62,7 @@ void Connector::stop()
 void Connector::stopInLoop()
 {
     loop_->assertInLoopThread();
-    if(state_ == kConnecting)
+    if (state_ == kConnecting) //TODO: this is important
     {
         setState(kDisconnected);
         int sockfd = removeAndResetChannel();
@@ -120,7 +121,8 @@ int Connector::removeAndResetChannel()
     channel_->disableAll();
     channel_->remove();
     int sockfd = channel_->fd();
-    loop_->runInLoop(boost::bind(&Connector::resetChannel,this));
+    //TODO: why runInLoop??? because channel is handling Event, resetChannel is to ~Channel, ~Channel assert(!eventHandling_)
+    loop_->queueInLoop(boost::bind(&Connector::resetChannel, this));
     return sockfd;
 }
 

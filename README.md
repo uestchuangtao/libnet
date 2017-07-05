@@ -1,12 +1,12 @@
 #libnet
 
+### 2017-5-31 Mutex.h Condition.h Condition.cpp
+
 ### 2017-6-1 BlockingQueue.h Exception.h Exception.cpp
 TODO: add stack for Exception
 
-### 2017-5-31 Mutex.h Condition.h Condition.cpp
-
 ### 2017-6-3 BoundedBlockingQueue.h Thread.h Thread.cpp
-TODO: CurrentThread, tid
+TODO: CurrentThread, tid -> finisheds
 
 ### 2017-6-4 ThreadPool.h ThreadPool.cpp
 
@@ -42,7 +42,20 @@ DaytimeServer
 
 ### 2017-6-20
 #### TcpConnection
- why??? ConnectionDestroyed&&HandleClose ->connectionCallback
+ why??? ConnectionDestroyed&&HandleClose ->connectionCallback 
+ add testCase:DaytimeServer
+ 
+### 2017-6-21
+add testCase:DiscardServer&DiscardClient
+
+### 2017-6-30 -- 2017-7-3
+edit UsbServer
+
+### 2017-7-4
+debug UsbServer, add resume from break-point
+
+
+
 
 
 

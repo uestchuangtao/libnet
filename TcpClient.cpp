@@ -21,6 +21,7 @@ namespace detail
     void removeConnector(const ConnectorPtr &connector)
     {
         //TODO
+
     }
 }
 

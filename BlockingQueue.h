@@ -14,9 +14,9 @@
 #include <deque>
 
 template<typename T>
-class BlockQueue: boost::noncopyable {
+class BlockingQueue : boost::noncopyable {
 public:
-    BlockQueue()
+    BlockingQueue()
             :mutex_(),
              notEmpty_(mutex_),
              queue_()

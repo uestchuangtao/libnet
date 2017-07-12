@@ -155,14 +155,14 @@ private:
                         }
 
                         client_info->state_ = kWaiting;
-                        TcpConnectionWkPtr wkConn(conn);
                         TimerId check_timerId = conn->getLoop()->runEvery(1.0,
                                                                           boost::bind(&UsbServer::checkAndSendCFile,
-                                                                                      this, wkConn));
+                                                                                      this, TcpConnectionWkPtr(conn)));
                         client_info->checkCFileTimerId_ = check_timerId;
                         TimerId keepAlive_timerId = conn->getLoop()->runEvery(60.0,
                                                                               boost::bind(&UsbServer::checkKeepAlive,
-                                                                                          this, wkConn));
+                                                                                          this,
+                                                                                          TcpConnectionWkPtr(conn)));
                         client_info->keepAliveTimerId_ = keepAlive_timerId;
 
 
@@ -346,7 +346,7 @@ private:
 
     }
 
-    void checkAndSendCFile(TcpConnectionWkPtr conn)
+    void checkAndSendCFile(const TcpConnectionWkPtr &conn)
     {
         TcpConnectionPtr guardConn = conn.lock();
         if (guardConn)
@@ -381,7 +381,7 @@ private:
         }
     }
 
-    void checkKeepAlive(TcpConnectionWkPtr conn)
+    void checkKeepAlive(const TcpConnectionWkPtr &conn)
     {
         TcpConnectionPtr guardConn = conn.lock();
         if (guardConn)

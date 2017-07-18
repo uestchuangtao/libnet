@@ -136,7 +136,8 @@ private:
                         cout << "UsbServer::OnMessage,Invalid length " << messageHeader.length_ << endl;
                         conn->forceClose();
                         return;
-                    } else if (buf->readableBytes() >= messageHeader.length_ + kHeaderLen)
+                    }
+                    else if (buf->readableBytes() >= messageHeader.length_ + kHeaderLen)
                     {
                         buf->retrieve(kHeaderLen);
                         string verifyCode = buf->retrieveAsString(messageHeader.length_);

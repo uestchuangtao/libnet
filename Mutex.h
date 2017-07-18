@@ -82,11 +82,12 @@ private:
     MutexLock& mutex_;
 };
 
-#endif
-
 /* -------------------------------------------------
     Prevent misuse like:
     MutexLockGuard(mutex);
     A tempory object doesn't hold the lock for long
     -----------------------------------------------*/
-//#define MutexLockGuard(x) error "Missing guard object name"
+#define MutexLockGuard(x) static_assert(false,"Missing guard object name")
+
+#endif
+

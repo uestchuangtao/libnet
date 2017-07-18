@@ -33,6 +33,25 @@ namespace detail {
         return static_cast<pid_t>(::syscall(SYS_gettid));
     }
 
+    void afterFork()
+    {
+        CurrentThread::t_cachedTid = 0;
+        CurrentThread::t_threadName = "main";
+        CurrentThread::tid();
+    }
+
+    class ThreadNameInitializer {
+    public:
+        ThreadNameInitializer()
+        {
+            CurrentThread::t_threadName = "main";
+            CurrentThread::tid();
+            pthread_atfork(NULL, NULL, &afterFork);
+        }
+    };
+
+    ThreadNameInitializer init;  //excute once
+
 
     struct ThreadData {
         typedef Thread::ThreadFunc ThreadFunc;

@@ -56,8 +56,8 @@ void DiscardClient::onConnection(const TcpConnectionPtr &conn)
     {
         conn->setTcpNoDelay(true);
         conn->send(message_);
-    } else
-    {
+    }
+    else {
         loop_->quit();
     }
 }

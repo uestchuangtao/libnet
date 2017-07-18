@@ -59,6 +59,10 @@ add keepalive
 add sendfile-version
 reconstruction finished
 
+### 2017-7-17
+add ThreadNameInitializer
+EventLoop add IgnoreSigPipe
+
 
 
 

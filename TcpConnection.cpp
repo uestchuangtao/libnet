@@ -357,7 +357,7 @@ void TcpConnection::handleClose()
 
     closeCallback_(guardThis);
 
-    std::cout << "conn.use_count:" << guardThis.use_count() << std::endl;
+    //std::cout << "conn.use_count:" << guardThis.use_count() << std::endl;
 }
 
 void TcpConnection::handleError()

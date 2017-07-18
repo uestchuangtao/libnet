@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <sys/eventfd.h>
 #include <algorithm>
+#include <signal.h>
 
 namespace {
     __thread EventLoop* t_loopInThisThread = 0;
@@ -30,6 +31,16 @@ namespace {
         }
         return evtfd;
     }
+
+    class IgnoreSigPipe {
+    public:
+        IgnoreSigPipe()
+        {
+            ::signal(SIGPIPE, SIG_IGN);
+        }
+    };
+
+    IgnoreSigPipe initObj;
 }
 
 EventLoop* EventLoop::getEventLoopOfCurrentThread()
@@ -108,7 +119,7 @@ void EventLoop::quit()
 
     if(!isInLoopThread())
     {
-        wakeup(); //TODO:how to wakeup???
+        wakeup(); //TODO:
     }
 }
 

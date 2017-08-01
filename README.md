@@ -13,7 +13,7 @@ TODO: CurrentThread, tid -> finisheds
 ### 2017-6-8 Socket.h Socket.cpp Acceptor.h Acceptor.cpp
 
 ### 2017-6-9 EventLoop.h EventLoop.cpp Channel.h Channel.cpp
-Channel: tied ???  TcpConnectionPtr,answer:to avoid cycle-occupied
+Channel: tied. TcpConnectionPtr,answer:to avoid cycle-occupied
 
 ### 2017-6-10 Poller.h Poller.cpp
 
@@ -28,7 +28,7 @@ modify Mutex add UnassignGuard
 ### 2017-6-14
 TcpConnection
 Callbacks
-copy Buffer from muduo
+Buffer 
 Channel add tie: to avoid cycle-occupied
 
 ### 2017-6-16
@@ -42,7 +42,7 @@ DaytimeServer
 
 ### 2017-6-20
 #### TcpConnection
- why??? ConnectionDestroyed&&HandleClose ->connectionCallback,answer:to print connection_info
+ ConnectionDestroyed&&HandleClose ->connectionCallback,to print connection_info
  add testCase:DaytimeServer
  
 ### 2017-6-21
